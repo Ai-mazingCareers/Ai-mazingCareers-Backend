@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 const resumeSchema = new mongoose.Schema({
   name: { type: String, required: true }, // Compulsory
-  email: { type: String, required: true }, // Compulsory
+  email: { type: String, required: true, unique: true  }, // Compulsory
   mobile: { type: String, required: true }, // Compulsory
   objective: { type: String }, // Optional
   education: [{

@@ -1,0 +1,79 @@
+{
+  "_id": {
+    "$oid": "6754598b50632065afb631e5"
+  },
+  "job_title": "Frontend Developer",
+  "company_name": "BrightCode Technologies",
+  "location": "Bangalore, India",
+  "employment_type": "Full-time",
+  "experience_required": {
+    "minimum_years": {
+      "$numberInt": "0"
+    },
+    "preferred_years": {
+      "$numberInt": "1"
+    }
+  },
+  "education_required": [
+    "Bachelor's Degree in Computer Science",
+    "Bachelor's Degree in Information Technology",
+    "Relevant certifications in web development"
+  ],
+  "skills_required": [
+    "HTML",
+    "CSS",
+    "JavaScript",
+    "React.js",
+    "Version Control (Git)",
+    "Responsive Design",
+    "Debugging and Problem Solving"
+  ],
+  "skills_preferred": [
+    "Tailwind CSS",
+    "Redux",
+    "Next.js",
+    "Figma or Adobe XD (for UI/UX design understanding)",
+    "TypeScript",
+    "RESTful APIs"
+  ],
+  "responsibilities": [
+    "Develop and maintain user interfaces using HTML, CSS, and JavaScript.",
+    "Work closely with the design team to implement responsive and visually appealing layouts.",
+    "Collaborate with backend developers to integrate APIs and ensure seamless functionality.",
+    "Test and debug code to ensure cross-browser compatibility.",
+    "Optimize web applications for speed and scalability.",
+    "Stay updated with the latest trends and best practices in frontend development."
+  ],
+  "benefits": [
+    "Flexible Work Hours",
+    "Health Insurance",
+    "Learning and Development Opportunities",
+    "Mentorship from Senior Developers",
+    "Career Growth Path for Freshers"
+  ],
+  "certifications_preferred": [
+    "Certified Front-End Developer",
+    "Google Mobile Web Specialist",
+    "React.js or JavaScript-related certifications"
+  ],
+  "job_post_date": {
+    "$date": {
+      "$numberLong": "1732838400000"
+    }
+  },
+  "application_deadline": {
+    "$date": {
+      "$numberLong": "1734499200000"
+    }
+  },
+  "salary_range": {
+    "minimum": {
+      "$numberInt": "300000"
+    },
+    "maximum": {
+      "$numberInt": "500000"
+    },
+    "currency": "INR"
+  },
+  "job_posted_by": "hr@brightcodetech.com"
+}

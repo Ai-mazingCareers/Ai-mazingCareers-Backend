@@ -19,20 +19,17 @@ const client = new MongoClient(uri, {
 });
 
 // Function to connect to the database
- function connectToDatabase() {
+ async function connectToDatabase() {
   try {
     // Connect the client to the server
-   client.connect();
+   await client.connect();
     
     // Confirm connection
     console.log("Connected successfully to MongoDB Atlas");
 
   } catch (err) {
     console.error('Failed to connect to MongoDB Atlas', err);
-  } finally {
-    // Ensure the client will close when you finish/error
-     client.close();
-  }
+  } 
 }
 
 // Call the connect function

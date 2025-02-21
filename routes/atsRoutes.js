@@ -3,6 +3,6 @@ const { calculateATS } = require("../controllers/atsController");
 const router = express.Router();
 
 // POST route for ATS scoring
-router.post("/", calculateATS);
+router.get("/", calculateATS);
 
 module.exports = router;

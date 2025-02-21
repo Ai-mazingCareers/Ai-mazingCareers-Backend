@@ -1,0 +1,78 @@
+{
+  "_id": {
+    "$oid": "6754598b50632065afb630e2"
+  },
+  "job_title": "Software Development Engineer (SDE)",
+  "company_name": "Tech Innovations Inc.",
+  "location": "Seattle, WA",
+  "employment_type": "Full-time",
+  "experience_required": {
+    "minimum_years": {
+      "$numberInt": "2"
+    },
+    "preferred_years": {
+      "$numberInt": "4"
+    }
+  },
+  "education_required": [
+    "Bachelor's Degree in Computer Science",
+    "Bachelor's Degree in Software Engineering"
+  ],
+  "skills_required": [
+    "Java",
+    "Python",
+    "Data Structures",
+    "Algorithms",
+    "SQL",
+    "Cloud Computing",
+    "RESTful API Development",
+    "Version Control (Git)"
+  ],
+  "skills_preferred": [
+    "Kubernetes",
+    "Docker",
+    "AWS",
+    "CI/CD Pipelines",
+    "Microservices Architecture",
+    "GraphQL"
+  ],
+  "responsibilities": [
+    "Design, develop, and maintain scalable software solutions.",
+    "Implement and optimize algorithms to improve application performance.",
+    "Collaborate with cross-functional teams to define and deliver features.",
+    "Build and maintain RESTful APIs for seamless integration.",
+    "Debug and resolve technical issues in a timely manner.",
+    "Participate in code reviews and adhere to best practices."
+  ],
+  "benefits": [
+    "Medical, Dental, and Vision Insurance",
+    "401(k) Matching",
+    "Stock Options",
+    "Paid Time Off",
+    "Flexible Work Hours"
+  ],
+  "certifications_preferred": [
+    "AWS Certified Solutions Architect – Associate",
+    "Oracle Certified Professional, Java SE Programmer"
+  ],
+  "job_post_date": {
+    "$date": {
+      "$numberLong": "1732838400000"
+    }
+  },
+  "application_deadline": {
+    "$date": {
+      "$numberLong": "1734499200000"
+    }
+  },
+  "salary_range": {
+    "minimum": {
+      "$numberInt": "110000"
+    },
+    "maximum": {
+      "$numberInt": "150000"
+    },
+    "currency": "USD"
+  },
+  "job_posted_by": "hr@techinnovations.com"
+}
