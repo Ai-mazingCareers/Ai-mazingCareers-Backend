@@ -2,7 +2,6 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const dotenv = require("dotenv");
-const PORT = require("./const.js");
 const cookieParser = require("cookie-parser");
 const { client, connectToDatabase} = require('./config/connection.js');
 const {restrictToLoggedInUsers} = require("./middleware/auth");
@@ -40,8 +39,8 @@ app.use("/api/home", homeRoutes);
 
 
 // Start server
-app.listen(PORT, () => {
-  console.log(`Backend running at http://localhost:${PORT}`);
+app.listen(process.env.PORT, () => {
+  console.log(`Backend running at http://localhost:${process.env.PORT}`);
 });
 
 

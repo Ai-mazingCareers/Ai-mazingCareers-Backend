@@ -13,24 +13,29 @@ if __name__ == "__main__":
     try:
         input_data = json.loads(sys.stdin.read())
         pdf_bytes = base64.b64decode(input_data["resume_pdf"])
-        resume_data = get_resume_info(pdf_bytes)
-        job_data = get_job_description(input_data["job_desc"])
+        raw_resume_data = get_resume_info(pdf_bytes)
+        raw_job_data = get_job_description(input_data["job_desc"])
 
-        if not resume_data:
+        if not raw_resume_data:
             raise ValueError("Failed to extract text from resume")
         
-        resume_text = extract_resume_data(resume_data)
+        resume_text = extract_resume_data(raw_resume_data)
         resume_data = extract_resume_details(resume_text) 
+
         resume_data = convert_to_lowercase(resume_data)
 
-        job_text = extract_job_data(job_data)
+        job_text = extract_job_data(raw_job_data)
         job_data = extract_job_details(job_text)
         
         resume_technical = resume_data.get("technical_skills", [])
+        resume_technical = [skill.replace(".", "") for skill in resume_technical]
+
         resume_soft = resume_data.get("soft_skills", [])
 
         job_technical = job_data.get("job_technical_skills", [])
         job_soft = job_data.get("job_soft_skills", [])
+
+        skills_data = calculate_skill_match(resume_technical+resume_soft, job_technical+job_soft)
 
         def encode_text(text_list):
             return model.encode(" ".join(text_list) if text_list else "placeholder", convert_to_tensor=True)
@@ -38,31 +43,18 @@ if __name__ == "__main__":
         resume_tech_emb, resume_soft_emb = encode_text(resume_technical), encode_text(resume_soft)
         job_tech_emb, job_soft_emb = encode_text(job_technical), encode_text(job_soft)
 
-        tech_match = 0.0 if not resume_technical else (
-            1.0 if not job_technical else util.pytorch_cos_sim(resume_tech_emb, job_tech_emb).item()
-        )
+        skill_match_score = 0.0
+        if len(skills_data["matched_skills"])!=0:
+            tech_match = 0.0 if not resume_technical else (
+                1.0 if not job_technical else util.pytorch_cos_sim(resume_tech_emb, job_tech_emb).item()
+            )
 
-        soft_match = 1.0 if not job_soft else (
-            0.0 if not resume_soft else util.pytorch_cos_sim(resume_soft_emb, job_soft_emb).item()
-        )
-        
-        skill_match_score = (tech_match * 0.9) + (soft_match * 0.1)
+            soft_match = 1.0 if not job_soft else (
+                0.0 if not resume_soft else util.pytorch_cos_sim(resume_soft_emb, job_soft_emb).item()
+            )
+            skill_match_score = (tech_match * 0.9) + (soft_match * 0.1)
 
-        if len(resume_technical) <= 3:
-            skill_match_score *= 0.2
-
-
-        skills_data = calculate_skill_match(resume_technical, job_technical)
-
-        total_required = len(skills_data["matched_skills"]) + len(skills_data["missing_skills"])
-
-        if total_required > 0:
-            matched_ratio = len(skills_data["matched_skills"]) / total_required
-            missing_ratio = len(skills_data["missing_skills"]) / total_required
-            direct_match_score = (matched_ratio * 0.6) - (missing_ratio * 0.4)
-            direct_match_score = max(0, min(direct_match_score, 1))
-        else:
-            direct_match_score = 0
+        direct_match = skills_data["match_percentage"] / 100
 
         required_exp = int(job_data.get("experience_required", 0))
         resume_exp = resume_data.get("experience_years", 0)
@@ -72,15 +64,19 @@ if __name__ == "__main__":
         contact_details = resume_data.get("contact_details", {})
         required_fields = ["name", "email", "phone_number"]
 
-        contact_score = sum(1/3 for field in required_fields if contact_details.get(field))
+        contact_score = sum(.33 for field in required_fields if contact_details.get(field))
         section_score = min(len(resume_data.get("resume_sections", [])) / 5, 1.0)
 
-        formatting_score = (contact_score * 0.4) + (section_score * 0.6)
+        formatting_score = (contact_score * 0.7) + (section_score * 0.3)
 
-        ats_score = (skill_match_score * 0.65) + (direct_match_score * 0.05) + (experience_score * .2) + (formatting_score * 0.1)
-
+        ats_score = (
+            (skill_match_score * 70) +  
+            (direct_match * 20) +      
+            (experience_score * 5) +   
+            (formatting_score * 5)     
+        )
         response = {
-            "ats_score": round(ats_score * 100, 2),
+            "ats_score": round(ats_score, 2),
             "details": {
                 "contact_details": resume_data["contact_details"],
                 "education": resume_data["highest_education"],
@@ -89,11 +85,10 @@ if __name__ == "__main__":
                 "match_percentage": skills_data["match_percentage"],
                 "resume_data": resume_data,
                 "job_data": job_data,
-                "skill_match_score": skill_match_score,
-                "direct_match_score": direct_match_score,
-                "experience_score": experience_score,
-                "formatting_score": formatting_score
-
+                "skill_match_score": skill_match_score*70,
+                "direct_match_score": direct_match * 20,
+                "experience_score": experience_score*5,
+                "formatting_score": formatting_score*5
             }
         }
 

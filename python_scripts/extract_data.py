@@ -13,7 +13,7 @@ client = Groq(api_key=api_key)
 def extract_resume_data(resume_text):
     try:
         response = client.chat.completions.create(
-        model="llama3-8b-8192",
+        model="llama3-70b-8192",
         messages=[
             {
                 "role": "system",
@@ -32,9 +32,10 @@ def extract_resume_data(resume_text):
                     }
                     
                 Guidelines:
-                - Extract each and every technical(basic to advanced=) and soft skills from all sections of the resume.
+                - Extract each and every technical skill (basic to advanced) and soft skills from all sections of the resume.
                 - Extract experience only from the experience or internship section.
                 - If data is missing, return null, [], or "" instead of omitting fields.
+                - Ensure to extract all the fields mentioned in the output format.
                 - Ensure JSON validity with no extra text or explanations.
                 - Maintain consistent casing and spacing in keys and values.
                  """

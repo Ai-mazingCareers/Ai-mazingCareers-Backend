@@ -23,7 +23,7 @@ def get_job_description(job_desc):
         "education_required": [edu.lower() for edu in job_desc.get("education_required", [])],
         "skills_required": [skill.lower() for skill in job_desc.get("skills_required", [])],
         "skills_preferred": [skill.lower() for skill in job_desc.get("skills_preferred", [])],
-        "responsibilities": [resp.lower() for resp in job_desc.get("responsibilities", [])]
+        "responsibilities": job_desc.get("responsibilities", "").lower()
     }
 
 def convert_to_lowercase(data):
