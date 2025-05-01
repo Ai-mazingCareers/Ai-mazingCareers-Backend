@@ -33,6 +33,9 @@ app.use("/api/resume", resumeRoutes);
 const jobRoutes = require("./routes/jobRoutes");
 app.use("/api/job", jobRoutes);
 
+const applicationRoutes = require("./routes/applicationRoutes");
+app.use("/api/apply", applicationRoutes);
+
 // fetch all jobs route
 const homeRoutes = require("./routes/homeRoutes");
 app.use("/api/home", homeRoutes);
