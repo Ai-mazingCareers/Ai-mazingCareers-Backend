@@ -42,8 +42,21 @@ app.use("/api/home", homeRoutes);
 
 
 // Start server
-app.listen(process.env.PORT, () => {
+const server = app.listen(process.env.PORT, () => {
   console.log(`Backend running at http://localhost:${process.env.PORT}`);
 });
+
+
+process.on('SIGINT', async () => {
+  console.log('\n🔌 Shutting down gracefully...');
+  await client.close();
+  console.log('❎ MongoDB connection closed');
+  server.close(() => {
+    console.log('🛑 Server stopped');
+    process.exit(0);
+  });
+});
+
+
 
 

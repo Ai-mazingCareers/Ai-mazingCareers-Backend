@@ -1,27 +1,21 @@
 const mongoose= require('mongoose');
 const { ObjectId } = require('mongodb');
 
-const { client, connectToDatabase } = require('../config/connection');  
-const job = require('../models/job'); // Import the resume schema
-
-
-// Create a connection to the Recruiter database
-const RecruiterDb = mongoose.createConnection(
-  `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@ai-mazingcareers.kns0c.mongodb.net/Recruiter?retryWrites=true&w=majority`,
-  { useNewUrlParser: true, useUnifiedTopology: true }
-);
-
-// Use the schema with the specific connection
-const Jobsinfo = RecruiterDb.model('job-info', job.schema, "job-info");
-
-// posting data to the database
+const { client } = require('../config/connection');  
+const job = require('../models/job');
 
 // Function to insert Jobs information
 async function jobInfo(req, res) {
   const jobsData = req.body; // Extract data from the request body
   try {
-    // Use the model to validate and insert the data
-    const result = await Jobsinfo.create(jobsData);
+
+    const validatedJob = new job(jobsData); 
+    await validatedJob.validate(); 
+
+    const db = client.db('Recruiter');
+    const collection = db.collection('job-info');
+
+    const result = await collection.insertOne(jobsData);
 
     res.status(201).json({
       message: 'Job inserted successfully',

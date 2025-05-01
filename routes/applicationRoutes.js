@@ -4,8 +4,8 @@ const router = express.Router();
 
 // POST route for ATS scoring
 router.post("/", applyForJob);
-router.post("/applied-jobs", getAppliedJobs);
-router.post("/posted-jobs", getPostedJobs);
+router.get("/applied-jobs", getAppliedJobs);
+router.get("/posted-jobs", getPostedJobs);
 
 
 

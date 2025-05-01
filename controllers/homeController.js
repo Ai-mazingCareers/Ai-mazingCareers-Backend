@@ -3,12 +3,6 @@ const axios = require('axios'); // Ensure axios is installed for making HTTP req
 const { client, connectToDatabase } = require('../config/connection');  
 const job = require('../models/job'); // Import the resume schema
 
-// Create a connection to the Recruiter database
-// const RecruiterDb = mongoose.createConnection(
-//   `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@ai-mazingcareers.kns0c.mongodb.net/Recruiter?retryWrites=true&w=majority`,
-//   { useNewUrlParser: true, useUnifiedTopology: true }
-// );
-
 // get all jobs
 async function getAllJobs(req, res) {
 

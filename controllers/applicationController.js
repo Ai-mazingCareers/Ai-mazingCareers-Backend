@@ -63,7 +63,7 @@ const applyForJob = async (req, res) => {
 
 
 const getAppliedJobs = async (req, res) => {
-  const { email } = req.body;
+  const { email } = req.query; // Use query parameters for GET request
 
   if (!email) {
     return res.status(400).json({ message: 'Email is required' });
@@ -99,7 +99,7 @@ const getAppliedJobs = async (req, res) => {
 
 
 const getPostedJobs = async (req, res) => {
-  const { email } = req.body;
+  const { email } = req.query;
 
   if (!email) {
     return res.status(400).json({ message: 'Email is required' });
