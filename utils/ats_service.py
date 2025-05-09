@@ -6,6 +6,11 @@ import base64
 from datetime import datetime
 from constant import skills_list
 from sentence_transformers import SentenceTransformer, util
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
+from sklearn.metrics.pairwise import cosine_similarity
+from sklearn.metrics.pairwise import cosine_similarity
+
 
 
 missing_sections = []
@@ -168,58 +173,201 @@ def calculate_skill_match(resume_skills, project_skills, experience_skills, job_
 
 
 
-if __name__ == "__main__":
+# if __name__ == "__main__":
     
-    # Initialize Sentence-BERT model
-    model = SentenceTransformer('all-MiniLM-L6-v2')
+#     # Initialize Sentence-BERT model
+#     model = SentenceTransformer('all-MiniLM-L6-v2')
+
+#     try:
+#         input_data = json.loads(sys.stdin.read())
+#         pdf_bytes = base64.b64decode(input_data["resume_pdf"])
+#         resume_data = get_resume_info(pdf_bytes)
+#         job = input_data["job_desc"]
+#         job_data = get_job_description(job)
+
+#     except Exception as e:
+#         print(json.dumps({"error": str(e)}))
+   
+#     resume_skills = list(set(resume_data['skills']))
+#     project_skills = list(set(resume_data['project_skills']))
+#     experience_skills = list(set(resume_data['experience_section']['experience_skills']))
+#     job_skills = list(set(job_data['skills_required'] + job_data['skills_preferred']))
+
+
+#     # Encode only if the section is not empty, else use a placeholder
+#     resume_embedding = model.encode(" ".join(resume_skills) if resume_skills else "placeholder", convert_to_tensor=True)
+#     project_embedding = model.encode(" ".join(project_skills) if project_skills else "placeholder", convert_to_tensor=True)
+#     experience_embedding = model.encode(" ".join(experience_skills) if experience_skills else "placeholder", convert_to_tensor=True)
+#     job_embedding = model.encode(" ".join(job_skills) if job_skills else "placeholder", convert_to_tensor=True)
+
+#     # Compute skill match scores
+#     resume_match = util.pytorch_cos_sim(resume_embedding, job_embedding).item() * 0.4
+#     project_match = util.pytorch_cos_sim(project_embedding, job_embedding).item() * 0.3
+#     experience_match = util.pytorch_cos_sim(experience_embedding, job_embedding).item() * 0.2
+   
+
+#     # Compute experience score
+#     required_experience = int(job_data['experience_required']['$numberInt'])
+#     experience_score = (1 if required_experience == 0 else min(resume_data['experience_section']['experience_years']/ required_experience, 1.0)) * 0.1
+   
+#     # Normalize and calculate final weighted ATS score
+#     ats_score = (resume_match + project_match + experience_match + experience_score) / (0.4 + 0.3 + 0.2 + 0.1)
+#     skills_data = calculate_skill_match(resume_skills, project_skills, experience_skills, job_skills)
+
+#     response = {
+#         "ats_score": round(ats_score * 100, 2),
+#         "details": {
+#             "contact_details": resume_data['contact_details'],
+#             "education": resume_data['education'],
+#             "matched_skills": skills_data['matched_skills'],
+#             "missing_skills": skills_data['missing_skills'],
+#             "match_percentage": skills_data['match_percentage'],
+#             "missing_sections": missing_sections
+#         }
+#     }
+
+#     # Output only the JSON response
+#     print(json.dumps(response))
+
+# def safe_join(skill_list):
+#     """Ensure non-empty text for TF-IDF vectorization."""
+#     return " ".join(skill_list) if skill_list else "placeholder"
+
+
+# def safe_join(skill_list):
+#     """Ensure non-empty text for TF-IDF vectorization."""
+#     return " ".join(skill_list) if skill_list else "placeholder"
+
+# if __name__=="__main__":
+
+#     try:
+#         # Read input JSON from Node.js (stdin)
+#         input_data = json.loads(sys.stdin.read())
+
+#         # Decode the resume PDF
+#         pdf_bytes = base64.b64decode(input_data["resume_pdf"])
+
+#         # Extract resume data and job description
+#         resume_data = get_resume_info(pdf_bytes)  # Function to extract resume details
+#         job = input_data["job_desc"]
+#         job_data = get_job_description(job)  # Function to extract job details
+
+#         # Extract skills from resume and job description
+#         resume_skills = list(set(resume_data.get('skills', [])))
+#         project_skills = list(set(resume_data.get('project_skills', [])))
+#         experience_skills = list(set(resume_data.get('experience_section', {}).get('experience_skills', [])))
+#         job_skills = list(set(job_data.get('skills_required', []) + job_data.get('skills_preferred', [])))
+
+#         # Prepare text inputs for TF-IDF (with safe handling of empty lists)
+#         texts = [safe_join(resume_skills), safe_join(project_skills), safe_join(experience_skills), safe_join(job_skills)]
+
+#         # Initialize and fit TF-IDF model
+#         vectorizer = TfidfVectorizer()
+#         tfidf_matrix = vectorizer.fit_transform(texts)
+
+#         # Compute skill match scores
+#         resume_match = cosine_similarity(tfidf_matrix[0], tfidf_matrix[3]).item() * 0.4
+#         project_match = cosine_similarity(tfidf_matrix[1], tfidf_matrix[3]).item() * 0.3
+#         experience_match = cosine_similarity(tfidf_matrix[2], tfidf_matrix[3]).item() * 0.2
+
+#         # Compute experience score
+#         required_experience = int(job_data.get('experience_required', {}).get('$numberInt', 0))
+#         resume_experience_years = resume_data.get('experience_section', {}).get('experience_years', 0)
+
+#         experience_score = (
+#             1 if required_experience == 0 else min(resume_experience_years / required_experience, 1.0)
+#         ) * 0.1
+
+#         # Normalize and calculate final weighted ATS score
+#         ats_score = (
+#             resume_match + project_match + experience_match + experience_score 
+#         ) / (0.4 + 0.3 + 0.2 + 0.1 + 0.03 + 0.03 + 0.02)
+
+#         # Calculate skill match details
+#         skills_data = calculate_skill_match(resume_skills, project_skills, experience_skills, job_skills)
+
+#         # Build response JSON
+#         response = {
+#             "ats_score": round(ats_score * 100, 2),
+#             "details": {
+#                 "contact_details": resume_data.get('contact_details', {}),
+#                 "education": resume_data.get('education', {}),
+#                 "matched_skills": skills_data.get('matched_skills', []),
+#                 "missing_skills": skills_data.get('missing_skills', []),
+#                 "match_percentage": skills_data.get('match_percentage', 0),
+#                 "missing_sections": skills_data.get('missing_sections', [])
+#             }
+#         }
+
+#         # Print JSON response for Node.js to read
+#         print(json.dumps(response))
+
+#     except Exception as e:
+#         # Ensure valid JSON error response
+#         print(json.dumps({"error": str(e)}))
+#         sys.exit(1)
+
+
+def calculate_skill_match(resume_skills, job_skills):
+    matched_skills = list(set(resume_skills) & set(job_skills))
+    missing_skills = list(set(job_skills) - set(resume_skills))
+    match_percentage = (len(matched_skills) / len(job_skills)) * 100 if job_skills else 0
+    return {"matched_skills": matched_skills, "missing_skills": missing_skills, "match_percentage": round(match_percentage, 2)}
+
+if __name__ == "__main__":
+    # Load the Sentence-BERT model
+    model = SentenceTransformer("all-MiniLM-L6-v2")
 
     try:
         input_data = json.loads(sys.stdin.read())
         pdf_bytes = base64.b64decode(input_data["resume_pdf"])
         resume_data = get_resume_info(pdf_bytes)
-        job = input_data["job_desc"]
-        job_data = get_job_description(job)
+        job_data = get_job_description(input_data["job_desc"])
+
+        # Combine all skills from the resume
+        resume_skills = set(resume_data["skills"]) | set(resume_data["project_skills"]) | set(resume_data["experience_section"]["experience_skills"])
+        job_skills = set(job_data["skills_required"]) | set(job_data["skills_preferred"])
+
+        # Convert skills to a single text representation
+        resume_text = " ".join(resume_skills) if resume_skills else "placeholder"
+        job_text = " ".join(job_skills) if job_skills else "placeholder"
+
+        # Generate embeddings
+        resume_embedding = model.encode(resume_text, convert_to_tensor=True)
+        job_embedding = model.encode(job_text, convert_to_tensor=True)
+
+        # Compute overall skill match score
+        skill_match_score = util.pytorch_cos_sim(resume_embedding, job_embedding).item()
+
+        # Experience score calculation
+        required_experience = int(job_data["experience_required"])
+        resume_experience = resume_data["experience_section"]["experience_years"]
+
+        if resume_experience >= required_experience or required_experience == 0:
+            experience_score = 1.0
+        else:
+            experience_score = resume_experience / required_experience
+
+        # Final weighted ATS score
+        ats_score = (skill_match_score * 0.95) + (experience_score * 0.05)
+        
+
+        # Compute skill match details
+        skills_data = calculate_skill_match(resume_skills, job_skills)
+
+        response = {
+            "ats_score": round(ats_score * 100, 2),
+            "details": {
+                "contact_details": resume_data["contact_details"],
+                "education": resume_data["education"],
+                "matched_skills": skills_data["matched_skills"],
+                "missing_skills": skills_data["missing_skills"],
+                "match_percentage": skills_data["match_percentage"],
+            }
+        }
 
     except Exception as e:
-        print(json.dumps({"error": str(e)}))
-   
-    resume_skills = list(set(resume_data['skills']))
-    project_skills = list(set(resume_data['project_skills']))
-    experience_skills = list(set(resume_data['experience_section']['experience_skills']))
-    job_skills = list(set(job_data['skills_required'] + job_data['skills_preferred']))
+        response = {"error": str(e)}
 
-
-    # Encode only if the section is not empty, else use a placeholder
-    resume_embedding = model.encode(" ".join(resume_skills) if resume_skills else "placeholder", convert_to_tensor=True)
-    project_embedding = model.encode(" ".join(project_skills) if project_skills else "placeholder", convert_to_tensor=True)
-    experience_embedding = model.encode(" ".join(experience_skills) if experience_skills else "placeholder", convert_to_tensor=True)
-    job_embedding = model.encode(" ".join(job_skills) if job_skills else "placeholder", convert_to_tensor=True)
-
-    # Compute skill match scores
-    resume_match = util.pytorch_cos_sim(resume_embedding, job_embedding).item() * 0.4
-    project_match = util.pytorch_cos_sim(project_embedding, job_embedding).item() * 0.3
-    experience_match = util.pytorch_cos_sim(experience_embedding, job_embedding).item() * 0.2
-   
-
-    # Compute experience score
-    required_experience = int(job_data['experience_required']['$numberInt'])
-    experience_score = (1 if required_experience == 0 else min(resume_data['experience_section']['experience_years']/ required_experience, 1.0)) * 0.1
-   
-    # Normalize and calculate final weighted ATS score
-    ats_score = (resume_match + project_match + experience_match + experience_score) / (0.4 + 0.3 + 0.2 + 0.1)
-    skills_data = calculate_skill_match(resume_skills, project_skills, experience_skills, job_skills)
-
-    response = {
-        "ats_score": round(ats_score * 100, 2),
-        "details": {
-            "contact_details": resume_data['contact_details'],
-            "education": resume_data['education'],
-            "matched_skills": skills_data['matched_skills'],
-            "missing_skills": skills_data['missing_skills'],
-            "match_percentage": skills_data['match_percentage'],
-            "missing_sections": missing_sections
-        }
-    }
-
-    # Output only the JSON response
+    # Print JSON response
     print(json.dumps(response))

@@ -9,8 +9,6 @@ const {restrictToLoggedInUsers} = require("./middleware/auth");
 dotenv.config();
 
 const app = express();
-const port = process.env.PORT || 5000;
-
 // Connect to the database
 connectToDatabase();
 
@@ -35,14 +33,30 @@ app.use("/api/resume", resumeRoutes);
 const jobRoutes = require("./routes/jobRoutes");
 app.use("/api/job", jobRoutes);
 
+const applicationRoutes = require("./routes/applicationRoutes");
+app.use("/api/apply", applicationRoutes);
+
 // fetch all jobs route
 const homeRoutes = require("./routes/homeRoutes");
 app.use("/api/home", homeRoutes);
 
 
 // Start server
-app.listen(port, () => {
-  console.log(`Backend running at http://localhost:${port}`);
+const server = app.listen(process.env.PORT, () => {
+  console.log(`Backend running at http://localhost:${process.env.PORT}`);
 });
+
+
+process.on('SIGINT', async () => {
+  console.log('\n🔌 Shutting down gracefully...');
+  await client.close();
+  console.log('❎ MongoDB connection closed');
+  server.close(() => {
+    console.log('🛑 Server stopped');
+    process.exit(0);
+  });
+});
+
+
 
 
