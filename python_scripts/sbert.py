@@ -9,18 +9,18 @@ from utility import get_resume_info, calculate_skill_match, get_job_description,
     
 if __name__ == "__main__":
     model = SentenceTransformer("all-MiniLM-L6-v2")
-
     try:
         input_data = json.loads(sys.stdin.read())
         pdf_bytes = base64.b64decode(input_data["resume_pdf"])
         raw_resume_data = get_resume_info(pdf_bytes)
         raw_job_data = get_job_description(input_data["job_desc"])
-
         if not raw_resume_data:
             raise ValueError("Failed to extract text from resume")
         
         resume_text = extract_resume_data(raw_resume_data)
         resume_data = extract_resume_details(resume_text) 
+    
+       
 
         resume_data = convert_to_lowercase(resume_data)
 
@@ -96,6 +96,6 @@ if __name__ == "__main__":
         sys.stdout.flush() 
 
     except Exception as e:
-        error_response = {"error": str(e)}
+        error_response = {"errorrr": str(e)}
         print(json.dumps(error_response))
         sys.stdout.flush()

@@ -97,32 +97,4 @@ const getAppliedJobs = async (req, res) => {
 };
 
 
-
-const getPostedJobs = async (req, res) => {
-  const { email } = req.query;
-
-  if (!email) {
-    return res.status(400).json({ message: 'Email is required' });
-  }
-
-  try {
-    // 1. Connect to Recruiter DB
-    const recruiterDb = client.db('Recruiter');
-    const jobCollection = recruiterDb.collection('job-info');
-
-    // 2. Find jobs where recruiter_email matches the provided email
-    const postedJobs = await jobCollection.find({ job_posted_by: email }).toArray();
-
-    if (postedJobs.length === 0) {
-      return res.status(200).json({ message: 'No jobs posted yet', jobs: [] });
-    }
-
-    return res.status(200).json({ message: 'Posted jobs fetched successfully ✅', jobs: postedJobs });
-
-  } catch (error) {
-    console.error('❌ Error fetching posted jobs:', error);
-    return res.status(500).json({ message: 'Error fetching posted jobs', error: error.message });
-  }
-};
-
-module.exports = { applyForJob, getAppliedJobs, getPostedJobs };
+module.exports = { applyForJob, getAppliedJobs };

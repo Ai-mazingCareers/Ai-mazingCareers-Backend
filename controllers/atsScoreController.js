@@ -12,6 +12,7 @@ exports.checkAtsScore = async (req, res) => {
         
         const pythonScriptPath = path.join(process.cwd(), 'python_scripts', 'sbert.py');
         const pythonProcess = spawn("python", [pythonScriptPath]);
+        console.log("Python process started");
 
         const processPromise = new Promise((resolve, reject) => {
             let result = "";
