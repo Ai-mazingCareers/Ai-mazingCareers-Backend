@@ -7,8 +7,7 @@ load_dotenv(dotenv_path="../.env")
 
 api_key = os.getenv("GROQ_API_KEY")
 
-client = Groq(api_key=api_key)
-
+client = Groq(api_key="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")
 
 def extract_resume_data(resume_text):
     try:
@@ -61,7 +60,7 @@ def extract_resume_data(resume_text):
 def extract_job_data(job_description):
     try:
         response = client.chat.completions.create(
-        model="llama3-8b-8192",
+        model="llama3-70b-8192",
         messages=[
                 {
                 "role": "system",
