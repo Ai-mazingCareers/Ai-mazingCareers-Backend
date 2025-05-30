@@ -97,4 +97,65 @@ const getAppliedJobs = async (req, res) => {
 };
 
 
-module.exports = { applyForJob, getAppliedJobs };
+const getApplicantsForJob = async (req, res) => {
+  const { job_id } = req.query;
+
+  if (!job_id) {
+    return res.status(400).json({ message: 'job_id is required' });
+  }
+
+  if (!ObjectId.isValid(job_id)) {
+    return res.status(400).json({ message: 'Invalid job_id format' });
+  }
+
+  const jobObjectId = new ObjectId(job_id);
+
+  try {
+    // 1. Check if job exists
+    const recruiterDb = client.db('Recruiter');
+    const jobExists = await recruiterDb.collection('job-info').findOne({ _id: jobObjectId });
+
+    if (!jobExists) {
+      return res.status(404).json({ message: 'Job not found ❌' });
+    }
+
+    // 2. Get applicants list from User DB
+    const userDb = client.db('User');
+    const applicationCollection = userDb.collection('application-info');
+
+    const applicationDoc = await applicationCollection.findOne({ job_id: jobObjectId });
+
+    const applicantEmails = applicationDoc?.applicants || [];
+
+    if (applicantEmails.length === 0) {
+      return res.status(200).json({ message: 'No applicants yet', applicants: [], count: 0 });
+    }
+
+    // 3. Fetch all seekers' resume info
+    const seekerDb = client.db('Seeker');
+    const resumeCollection = seekerDb.collection('resume-info');
+
+    const seekersInfo = await resumeCollection
+      .find({ email: { $in: applicantEmails } })
+      .project({ _id: 0 }) // Optional: remove _id or sensitive fields
+      .toArray();
+
+    return res.status(200).json({
+      message: 'Applicants fetched successfully ✅',
+      applicants: seekersInfo,
+      count: seekersInfo.length
+    });
+
+  } catch (error) {
+    console.error('❌ Error fetching applicants for job:', error);
+    return res.status(500).json({ message: 'Error fetching applicants', error: error.message });
+  }
+};
+
+
+
+
+
+
+
+module.exports = { applyForJob, getAppliedJobs, getApplicantsForJob };
