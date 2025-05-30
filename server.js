@@ -13,7 +13,10 @@ const app = express();
 connectToDatabase();
 
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: 'https://aimazingcareers.site', // or '*', for all origins (not recommended for prod)
+  credentials: true,
+}));
 app.use(bodyParser.json());
 app.use(cookieParser());
 // Import routes
