@@ -1,12 +1,20 @@
 import fitz
+import re
 
+
+def clean_text(text):
+    # Replace escaped characters
+    text = text.encode('utf-8', 'ignore').decode('unicode_escape', 'ignore')
+    text = re.sub(r'[^\x00-\x7F]+', ' ', text)  # Remove non-ASCII
+    text = re.sub(r'\s+', ' ', text)  # Collapse multiple spaces
+    return text.strip().lower()
 
 def get_resume_info(pdf_bytes):
     resume_text = ""
     pdf = fitz.open(stream=pdf_bytes, filetype="pdf") 
     for page in pdf:
         resume_text += page.get_text("text") + "\n"  
-    return resume_text.lower()
+    return clean_text(resume_text)
 
 
 def calculate_skill_match(resume_skills, job_skills):
